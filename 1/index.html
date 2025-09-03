@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Homework Tasks Showcase</title>
+  <style>
+    :root {
+      --dark-blue: #0a2540;
+      --yellow: #fdd835;
+      --section-bg: #102d52;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--dark-blue);
+      color: white;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: var(--dark-blue);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: var(--yellow);
+    }
+
+    .logo {
+      height: 70px;
+    }
+
+    section {
+      padding: 20px;
+      margin: 15px;
+      background-color: var(--section-bg);
+      border-left: 8px solid var(--yellow);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      color: var(--yellow);
+      margin-bottom: 10px;
+    }
+
+    .sub-header {
+      font-size: 1rem;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+
+    .image-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .image-block {
+      text-align: center;
+    }
+
+    .image-block img {
+      width: 280px;
+      max-width: 100%;
+      border: 3px solid var(--yellow);
+      border-radius: 10px;
+    }
+
+    .image-label {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: #eee;
+    }
+
+    .centered {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .centered img {
+      max-width: 90%;
+      height: auto;
+      border: 4px solid var(--yellow);
+      border-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .image-row {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Project 0 Submission</h1>
+    <img src="./logo.png" alt="Logo" class="logo">
+  </header>
+
+  <section>
+    <h2>Task 1: Selfie</h2>
+    <div class="sub-header">Angles of beauty</div>
+    <div class="image-row">
+      <div class="image-block">
+        <img src="./Non-Zoom1.png" alt="Non-Zoom1">
+        <div class="image-label">Non-Zoomed In</div>
+      </div>
+      <div class="image-block">
+        <img src="./Zoom1.png" alt="Zoom1">
+        <div class="image-label">Zoomed In</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Task 2: Architectural Perspective</h2>
+    <div class="sub-header">Party lane</div>
+    <div class="image-row">
+      <div class="image-block">
+        <img src="./Non-Zoom2.png" alt="Non-Zoom2">
+        <div class="image-label">Non-Zoomed In</div>
+      </div>
+      <div class="image-block">
+        <img src="./Zoom2.png" alt="Zoom2">
+        <div class="image-label">Zoomed In</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Task 3: Motion Animation</h2>
+    <div class="sub-header">Apple of my eyes</div>
+    <div class="centered">
+      <img src="./Apple.gif" alt="Animated Task 3 GIF">
+    </div>
+  </section>
+
+</body>
+</html>
