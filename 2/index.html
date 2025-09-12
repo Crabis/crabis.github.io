@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project 1: Image Alignment</title>
+  <style>
+    :root {
+      --dark-blue: #0a2540;
+      --yellow: #fdd835;
+      --section-bg: #102d52;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--dark-blue);
+      color: white;
+    }
+
+    header {
+      padding: 20px 40px;
+      background-color: var(--dark-blue);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    header h1 {
+      color: var(--yellow);
+      margin: 0;
+    }
+
+    .paragraph-box strong {
+    color: var(--yellow);
+    }
+
+    section {
+      background-color: var(--section-bg);
+      margin: 30px;
+      padding: 30px;
+      border-left: 8px solid var(--yellow);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      color: var(--yellow);
+      margin-bottom: 10px;
+    }
+
+    .paragraph-box {
+      background-color: #1b395f;
+      border-left: 4px solid var(--yellow);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .image-pair {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 25px;
+      align-items: flex-start;
+    }
+
+    .image-block {
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .image-block img {
+      width: 100%;
+      max-width: 320px;
+      border: 3px solid var(--yellow);
+      border-radius: 8px;
+    }
+
+    .image-block h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 20px; /* optional horizontal padding */
+    justify-items: center;
+    }
+
+    .image-grid .image-block {
+      max-width: 300px;
+    }
+
+    @media (max-width: 700px) {
+      .image-pair, .image-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Project 1: Images of the Russian Empire</h1>
+    <img src="logo.png" alt="Prokudin-Gorskii Logo" style="height: 60px; float: right; margin-top: -50px;">
+  </header>
+
+  <section>
+    <h2>Part 1: Single-Scale Alignment</h2>
+    <div class="paragraph-box">
+      In this first part, we will first attempt to align the smaller scale images using a single scale alignment. 
+      I implemented the 2 different methods mentioned in the project, <strong>Euclidean Distance</strong> and 
+      <strong>Normalised Cross Correlation</strong>. The alignment is then done based on either having the smallest 
+      Euclidean Distance or the highest Cross Correlation betweent the shifted image and the reference image. 
+      The scores are calculated based on the <strong>intensity of the pixels</strong> between the images. 
+      The possible shifts are also predefined to be within the <strong>range of [-15,16]</strong> . 
+      From the results, we can see that at this small range and with the small scale images, the results 
+      from both the ED and NCC methods returned similar results.
+    </div>
+
+    <div class="image-pair">
+      <div class="image-block">
+        <img src="./images/cathedral_ED.jpg" alt="Before">
+        <h4>ED Shift: G(5,3) R(12,4)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/cathedral_NCC.jpg" alt="After">
+        <h4>NCC Shift: G(5,2) R(12,3)</h4>
+      </div>
+    </div>
+
+    <div class="image-pair">
+      <div class="image-block">
+        <img src="./images/monastery_ED.jpg" alt="Before">
+        <h4>ED Shift: G(-3,2) R(3,2)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/monastery_NCC.jpg" alt="After">
+        <h4>NCC Shift: G(-3,2) R(3,2)</h4>
+      </div>
+    </div>
+
+    <div class="image-pair">
+      <div class="image-block">
+        <img src="./images/tobolsk_ED.jpg" alt="Before">
+        <h4>ED Shift: G(3,3) R(6,3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/tobolsk_NCC.jpg" alt="After">
+        <h4>NCC Shift: G(3,3) R(6,3)</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 2: Multi-Scale Alignment</h2>
+    <div class="paragraph-box">
+      For the second part, due to the large size of the .tif files, implementing the single scale alignment was 
+      now insufficient. Thus, in order to hasten the process, I had to implement a <strong> coarse-to-fine</strong> 
+      strategy using an image pyramid. Creating an image pyramid required the use of appropriate downsampling techniques, 
+      so I attempted to use a <strong>Gaussian kernel</strong> (size 3x3 and sigma =1) to reduce aliasing (as taught in 
+      the lectures) before downsampling. However, implementing the kernel meant having to compute the cross-correlation 
+      with the kernel for each pixel in the .tif image, which was <strong>computationally expensive</strong> and 
+      resulted in a very long runtime per image. Thus I chose to use <strong>decimation</strong> instead, taking every 
+      other row and column in the image to downscale by a factor of 2 for each level of the pyramid. The alignment 
+      is first done on the smallest scale image using the NCC method from the single scale alignment, with a search window 
+      of [-15,16]. The guess for the subsequent shifts at each higher level of the pyramid is then calculated by doubling 
+      the shifts found at the lower level. These guesses are then <strong>tested over a smaller refinement window of [-5,6]
+      </strong>, as the guess might not be the most accurate. This technique allowed for a much faster alignment 
+      process and worked for the majority of the images, as seen in the results below. However, a few images, namely, 
+      the emir.tif, melons.tif and self_portrait.tif, still showed some misalignments.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./images/church_pyramid.jpg" alt="Church">
+        <h4>Church Shift: G(25,4) R(58,-4)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/harvesters_pyramid.jpg" alt="Harvesters">
+        <h4>Harvester Shift: G(59,16) R(124,13)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/icon_pyramid.jpg" alt="Icon">
+        <h4>Icon Shift: G(41,17) R(89,23)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/italil_pyramid.jpg" alt="Italil">
+        <h4>Italil Shift: G(38,21) R(76,35)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/lastochikino_pyramid.jpg" alt="Lastochikino">
+        <h4>Lastochikino Shift: G(-2,-2) R(75,-8)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/lugano_pyramid.jpg" alt="Lugano">
+        <h4>Lugano Shift: G(41,-16) R(92,-29)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/siren_pyramid.jpg" alt="Siren">
+        <h4>Siren Shift: G(49,-6) R(95,-25)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/three_generations_pyramid.jpg" alt="Three Generations">
+        <h4>Three Generations Shift: G(53,14) R(112,11)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/emir_pyramid.jpg" alt="Emir">
+        <h4>(MISALIGNED) Emir Shift: G(49,24) R(103,55)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/melons_pyramid.jpg" alt="Melons">
+        <h4>(MISALIGNED) Melons Shift: G(81,10) R(155,10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/self_portrait_pyramid.jpg" alt="Self Portrait">
+        <h4>(MISALIGNED) Self Portrait Shift: G(78,29) R(155,32)</h4>
+      </div>
+    </div>
+
+    <div class="paragraph-box">
+      For the images with slight misalignments, I first tested the images with a larger refinement window of [-10,11],
+      which did improve the results for melons.tif and self_portrait.tif. (Great!!) However, emir.tif produced the same
+      result with the expanded refinement window. 
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/self_portrait_pyramid_refined.jpg" alt="Self Portrait Refined">
+        <h4>Self Portrait Shift (Refined): G(78,29) R(176,37)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/melons_pyramid_refined.jpg" alt="Extra 2">
+        <h4>Melons Shift (Refined): G(81,10) R(178,13)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/emir_pyramid_refined.jpg" alt="Extra 3">
+        <h4>(Same Result) Emir Shift: G(49,24) R(103,55)</h4>
+      </div>
+    </div>
+
+    <div class="paragraph-box">
+      Below are some extra example from the collection to show the image pyramid alignment at work!
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/camel_pyramid.jpg" alt="Camel">
+        <h4>Camel</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/textile_pyramid.jpg" alt="Textile">
+        <h4>Textile</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/khan_pyramid.jpg" alt="Khan">
+        <h4>Khan</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 3: Attempt at edge detection </h2>
+    <div class="paragraph-box">
+      Since the emir.tif produced the same results even with the expanded refinement window, I decided to try a 
+      different approach. Previously, the alignment was done based on the intensity of the pixels between the images.
+      However, due to the colour variation of the emir in the image, the 3 channels might not have similar intensity
+      distributions. So I attempted to use the Sobel kernel to extract the edges using the gradient vector magnitude.
+      However, while the Sobel kernel did successfully extract the edges, the alignment produced by the edge alignment
+      was worse than when using the intensity of the pixels for alignment.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/emir_edge_b.jpg" alt="Emir Edge Map Blue">
+        <h4>Emir Edge Map Blue</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/emir_edge_g.jpg" alt="Emir Edge Map Green">
+        <h4>Emir Edge Map Green</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/emir_edge_r.jpg" alt="Emir Edge Map Red">
+        <h4>Emir Edge Map Red</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/emir_pyramid_refined.jpg" alt="Emir (Intensity Alignment)">
+        <h4>(Before) Emir Intensity Alignend</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/emir_edge.jpg" alt="Emir (Edge Alignment)">
+        <h4>(After) Emir Edge Aligned</h4>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
