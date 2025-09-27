@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project 1: Image Alignment</title>
+  <style>
+    :root {
+      --dark-blue: #0a2540;
+      --yellow: #fdd835;
+      --section-bg: #102d52;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--dark-blue);
+      color: white;
+    }
+
+    header {
+      padding: 20px 40px;
+      background-color: var(--dark-blue);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    header h1 {
+      color: var(--yellow);
+      margin: 0;
+    }
+
+    .paragraph-box strong {
+    color: var(--yellow);
+    }
+
+    section {
+      background-color: var(--section-bg);
+      margin: 30px;
+      padding: 30px;
+      border-left: 8px solid var(--yellow);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      color: var(--yellow);
+      margin-bottom: 10px;
+    }
+
+    .paragraph-box {
+      background-color: #1b395f;
+      border-left: 4px solid var(--yellow);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .image-pair {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 25px;
+      align-items: flex-start;
+    }
+
+    .image-block {
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .image-block img {
+      width: 100%;
+      max-width: 1000px;
+      height: 300px;
+      object-fit: cover;
+      border: 3px solid var(--yellow);
+      border-radius: 8px;
+    }
+
+    .image-row-wrapper {
+      display: flex;
+      justify-content: center;    
+      flex-wrap: wrap;            
+      gap: 20px;                   
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .image-row-wrapper img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .image-row-wrapper h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-block h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 20px; /* optional horizontal padding */
+    justify-items: center;
+    }
+
+    .image-grid .image-block {
+      max-width: 300px;
+    }
+    @media (max-width: 700px) {
+      .image-pair, .image-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    table {
+      border-collapse: collapse; /* Ensures adjacent borders merge */
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black; /* Adds a border to each cell */
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Project 2: Fun with Filters and Frequencies!</h1>
+    <img src="logo.png" alt="Go Bears!" style="height: 60px; float: right; margin-top: -50px;">
+  </header>
+
+  <section>
+    <h2>Part 1.1: Convolutions from Scratch</h2>
+
+    <div class="image-pair">
+      <div class="image-block">
+        <img src="./images/convolution_4.png">
+        <h4>Code for convolution with 4 for loops</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/convolution_2.png">
+        <h4>Code for convolution with 2 for loops</h4>
+      </div>
+    </div>
+
+    <div class="image-pair">
+      <div class="image-block">
+        <img src="./images/project2_selfie.jpg">
+        <h4>Original Selfie</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/output_box.jpg">
+        <h4>Convolution with box filter</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/output_dx.jpg">
+        <h4>Convolution with Dx operator</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/output_dy.jpg">
+        <h4>Convolution with Dy operator</h4>
+      </div>
+    </div>
+
+    <table>
+      <tbody>
+        <tr>
+          <td>scipy convolve2d time</td>
+          <td>0.014151573181152344s</td>
+        </tr>
+        <tr>
+          <td>2-loop time</td>
+          <td>2.736306667327881s</td>
+        </tr>
+        <tr>
+          <td>4-for loop time</td>
+          <td>1.158200979232788s</td>
+        </tr>
+      </tbody>
+    </table>
+        <div class="paragraph-box">
+          Comparing between the runtimes, we can see that the scipy convolve2d function is significantly more 
+          optimised in comparison to my implemented function using the for loops. Oddly, the 4-for loops actually
+          outperforms my 2-for loop implementation as well on my test grayscale image. As for how boundaries are 
+          handled, the scipy function allows much more flexibility to specify using the boundaries="" parameter, 
+          allowing for boundaries to be a fill value, symmetrical or even a wrap. However, for the tests here, 
+          it defaults to a fill value with padding 0 similar to my for loop implementations.
+    </div>
+
+  </section>
+
+  <section>
+    <h2>Part 1.2: Finite Difference Operator</h2>
+
+    <div class="image-pair">
+      <div class="image-block">
+        <img src="./images/cameraman_full.png">
+        <h4>Showcase of the partial derivatives, gradient magnitude and edge map</h4>
+      </div>
+    </div>
+
+    <div class="paragraph-box">
+      For my edge map, I chose the threshold to be equivalent to 42 as this still allowed for the edges of
+      the building in the background to be reduced while keeping the noise from the grass at a minimum.
+  </section>
+
+  <section>
+    <h2>Part 1.3: Derivative of Gaussian Filter </h2>
+    <div class="paragraph-box">
+      We can see from the results that after applying the Gaussian filter, the edge detection is much cleaner
+      and the edges are sharper as compared to just applying the finite difference operators. However, this also 
+      allowed us to see the edges from the grass on the bottom of the cameraman picture more clearly, which could 
+      seem like additional noise. The results from the DoG filter and applying the Gaussian filter first before 
+      convolution with the finite difference operators are the same. This is to be expected since convolution is 
+      commutative.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/cameraman_edges_42.png">
+        <h4>Edge map before Gaussian Filter</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/cameraman_gaussian_edges.jpg">
+        <h4>Edge map after applying Gaussian first</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/cameraman_gaussian_convolve_edges.jpg">
+        <h4>Edge map after applying DoG filter</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 2.1: Image "Sharpening" </h2>
+    <div class="paragraph-box">
+      The unsharp mask filter works first by applying the blur filter by convolving the image with the Gaussian 
+      kernel. This causes the resultant image to remove high frequencies and maintain lower-frequencies. We then 
+      subtract this blurred image from the original image to get only the high frequencies from the original image.
+      Adding back the high frequencies to the original image with a multiplier scale, we accentuate the high 
+      frequencies, thus highlighting the sharp lines and edges in the image. Furthermore, we can see that as we
+      increase the degree of sharpening, the lines become increasingly obvious, however, as shown below, beyond
+      a certain degree, the sharpening effect becomes entirely unrealistic.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/taj_blurry.jpg">
+        <h4>Original Taj image</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/taj_blurry_blurred.jpg">
+        <h4>Taj image after Gaussian blurring</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/taj_sharpened.jpg">
+        <h4>Taj image sharpened with a scale of 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/taj_sharpened_5.0.jpg">
+        <h4>Taj image sharpened with a scale of 5</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/waterfall_original.jpg" alt="Emir Edge Map Blue">
+        <h4>Original waterfall image</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/waterfall_blurred.jpg" alt="Emir Edge Map Green">
+        <h4>Waterfall image blurred with Gaussian</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/waterfall_sharpened.jpg" alt="Emir Edge Map Red">
+        <h4>Waterfall image sharpened</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/waterfall_blurred_sharpened.jpg" alt="Emir Edge Map Red">
+        <h4>Blurred version of the waterfall image sharpened</h4>
+      </div>
+    </div>
+    <div class="paragraph-box">
+      As we can see from the example above, sharpening the blurred image still helps to return some sharpness to
+      the image. This actually brings it back to the original image as we are adding the high frequencies we 
+      subtracted and could still be applying even more sharpening depending on the scale of our sharpening.
+    </div>
+  </section>
+</body>
+</html>
+
+<section>
+    <h2>Part 2.2: Hybrid Images </h2>
+    <div class="paragraph-box">
+      Here we can form hybrid images by combining the low frequencies of one image with the high frequencies of
+      another, creating an effect where the view changes depending on distance.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/nosmile.jpg">
+        <h4>Original Image 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/smile.jpg">
+        <h4>Original Image 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/nosmile_fft.png">
+        <h4>Original Image 1 Fourier Transform</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/smile_fft.png">
+        <h4>Original Image 2 Fourier Transform</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/nosmile_aligned.png">
+        <h4>Original Image 1 Aligned</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/smile_aligned.png">
+        <h4>Original Image 2 Aligned</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/nosmile_low.png">
+        <h4>Original Image 1 Low-Pass</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/smile_high.png">
+        <h4>Original Image 2 High-Pass</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/nosmile_low_fft.png">
+        <h4>Original Image 1 Low-Pass Fourier Transform</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/smile_high_fft.png">
+        <h4>Original Image 2 High-Pass Fourier Transform</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/smile_hybrid.png">
+        <h4>Final Result (Frequency Chosen: Low-Pass Sigma = 8, High-Pass Sigma = 12)</h4>
+      </div>
+    </div>
+    <div class ="paragraph-box">
+      Here are some other hybrid examples
+    </div>
+    <div class="image-grid">
+        <div class="image-block">
+          <img src="images/DerekPicture.jpg">
+          <h4>Derek</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/nutmeg.jpg">
+          <h4>Nutmeg</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/derek_nutmeg.png">
+          <h4>Hybrid</h4>
+        </div>
+    </div>
+    <div class="image-grid">
+        <div class="image-block">
+          <img src="images/grape.jpg">
+          <h4>Grapes</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/tomato.jpg">
+          <h4>Tomato</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/tomato_grape.png">
+          <h4>Hybrid</h4>
+        </div>
+    </div>
+  </section>
+
+<section>
+    <h2>Part 2.3 and 2.4: Multiresolution Blending </h2>
+    <div class="paragraph-box">
+      In this last part, we utilise the Gaussian stack and Laplacian stack together with a mask to achieve 
+      nice blended images.
+    </div>
+    
+    <div class="image-row-wrapper">
+      <div class="image-block">
+      <img src="images/apple_gaussian.png">
+      <h4>Apple Gaussian stack</h4>
+      </div>
+    </div>  
+    <div class="image-row-wrapper">
+      <div class="image-block">
+      <img src="images/apple_lap.png">
+      <h4>Apple Laplacian stack</h4>
+      </div>
+    </div>
+    <div class="image-row-wrapper">
+      <div class="image-block">
+      <img src="images/orange_gaussian.png">
+      <h4>Orange Gaussian stack</h4>
+      </div>
+    </div>    
+    <div class="image-row-wrapper">
+      <div class="image-block">
+      <img src="images/orange_lap.png">
+      <h4>Orange Laplacian stack</h4>
+      </div>
+    </div>
+
+    <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="images/apple_orange_hybrid_full.png">
+          <h4>Recreation of Figure 3.42</h4>
+        </div>
+    </div>
+
+    <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="images/yoda_golden_hybrid_full.png">
+          <h4>Recreation of Figure 3.42 for Hybrid Blend</h4>
+        </div>
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/yoda.jpg">
+        <h4>Original Image 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/goldengate.jpg">
+        <h4>Original Image 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/yoda_hybrid.png">
+        <h4>Final Result (Yoda Descends)</h4>
+      </div>
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/smile.jpg">
+        <h4>Original Image 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/stars.jpg">
+        <h4>Original Image 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/starryeyes.png">
+        <h4>Final Result (Starry Eyed)</h4>
+      </div>
+    </div>
+
+  </section>
+
