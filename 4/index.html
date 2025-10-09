@@ -239,10 +239,11 @@
       as the reference frame. I then warped the left and right images into the middle image's frame of reference.
       Finally, I blended the three images together. However, trialling with the alpha mask to have a drop-off 
       from the center to the edges did not work well, as it resulted in a very blurry image in the overlap regions.
-      Instead, I chose to use a Winner Takes All approach and hybridized it with the alpha mask, creating a mask that
-      only blended near the edges of the Winner Takes All regions. This helped me to produce much better results.
-      I suspect it could also be a result of movement in my images, as the pictures in Yellowstone have geysers with 
-      moving steam.
+      Instead, I chose to use a Winner Takes All approach and hybridized it with the alpha mask. In this approach,
+      I used a Gaussian filter to smooth the edges of the Winner Takes All mask, effectively
+      blending near the edges of the Winner Takes All regions, resulting in much better and cleaner mosaics.
+      I suspect it could also be a result of movement in my images, as the pictures in Yellowstone have
+      geysers with moving steam.
     </div>
 
     <div class="image-grid">
