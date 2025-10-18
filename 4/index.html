@@ -324,7 +324,7 @@
       another corner. In my implementation, I set c_robust to 0.9. So response(i) < c_robust * response(j), meaning
       corner j must be stronger than corner i to surpress it. I then sorted by surpression radius and selected the 
       top 500 corners, resulting in a much more evenly distributed set of corners as can be seen.
-
+      <br><br>
       *I had to limit the inital Harris corners to 2000 as my computer was running out of memory.
     </div>
 
@@ -347,7 +347,7 @@
     the feature descriptor is based on relative intensity changes and not affected by changes in lighting 
     between images. I then flattened the 8x8 patch to allow for easier comparison later on. I showcased the first 
     20 feature descriptors extracted from the corners detected in the previous section.
-
+    <br><br>
     * For points at the edges, as a 20x20 patch cannot be extracted, I simply ignored those points.
     </div>
     <div class="image-row-wrapper">
