@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project 1: Image Alignment</title>
+  <style>
+    :root {
+      --dark-blue: #0a2540;
+      --yellow: #fdd835;
+      --section-bg: #102d52;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--dark-blue);
+      color: white;
+    }
+
+    header {
+      padding: 20px 40px;
+      background-color: var(--dark-blue);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    header h1 {
+      color: var(--yellow);
+      margin: 0;
+    }
+
+    .paragraph-box strong {
+    color: var(--yellow);
+    }
+
+    section {
+      background-color: var(--section-bg);
+      margin: 30px;
+      padding: 30px;
+      border-left: 8px solid var(--yellow);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      color: var(--yellow);
+      margin-bottom: 10px;
+    }
+
+    .paragraph-box {
+      background-color: #1b395f;
+      border-left: 4px solid var(--yellow);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .image-pair {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 25px;
+      align-items: flex-start;
+    }
+
+    .image-block {
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .image-block img {
+      width: 100%;
+      max-width: 1000px;
+      height: 300px;
+      object-fit: cover;
+      border: 3px solid var(--yellow);
+      border-radius: 8px;
+    }
+
+    .image-row-wrapper {
+      display: flex;
+      justify-content: center;    
+      flex-wrap: wrap;            
+      gap: 20px;                   
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .image-row-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .image-row-wrapper h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-row-wrapper .image-block img {
+    height: auto;           
+    object-fit: contain;   
+    max-width: 800px;       
+    }
+    .image-block h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-grid {
+      display: flex;         /* Use flex instead of grid */
+      flex-wrap: wrap;       /* Allow items to wrap to the next line */
+      justify-content: center; /* This is the magic: centers all rows */
+      gap: 20px;
+      margin-bottom: 30px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 20px;
+    }
+    
+    .image-grid .image-block {
+      flex-basis: 240px;  /* Set the base size */
+      flex-grow: 0;         /* <-- Set to 0 to STOP stretching */
+      max-width: 700px;     /* Still respect the max-width */
+    }
+    @media (max-width: 700px) {
+      .image-pair, .image-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    table {
+      border-collapse: collapse; /* Ensures adjacent borders merge */
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black; /* Adds a border to each cell */
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Project 4: Neural Radiance Field</h1>
+    <img src="logo.png" alt="Go Bears!" style="height: 60px; float: right; margin-top: -50px;">
+  </header>
+
+  <section>
+    <h2>Part 0.1 - Calibrating my Camera</h2>
+
+    <div class="paragraph-box">
+      The following is a subset of the images I took of the ArUco tags for calibrating my camera!
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./images/calibration_images/photo_1_2025-11-14_16-59-13.jpg">
+        <h4>Example Image 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/calibration_images/photo_2_2025-11-14_16-59-13.jpg">
+        <h4>Example Image 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/calibration_images/photo_3_2025-11-14_16-59-13.jpg">
+        <h4>Example Image 3</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/calibration_images/photo_4_2025-11-14_16-59-13.jpg">
+        <h4>Example Image 4</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 0.2: Capturing a 3D Object Scan</h2>
+    <div class="paragraph-box">
+      The images below are the images I took of my small penguin crochet to use as my dataset for the NeRF
+      model. For this model, I could not take images from the left side as this would result in the ArUco tag
+      being blocked. Later on, this can be seen in my resultant gif.
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./images/object_images/photo_1_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/object_images/photo_2_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/object_images/photo_3_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 3</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/object_images/photo_4_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 4</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 0.3: Estimating Camera Pose </h2>
+    <div class="paragraph-box">
+      Below are the 2 screenshots I took of the viser visualisation for my penguin dataset. As can be seen, 
+      the angle from the left of the penguin is not filled as I could not take pictures from that side due to
+      the ArUco tag being blocked by the object itself.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/penguin_render1.png">
+        <h4>Viser Visualisation Render 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/penguin_render2.png">
+        <h4>Viser Visualisation Render 2</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 0.4: Undistorting images and creating dataset </h2>
+    <div class="paragraph-box">
+      For this part, I split my sets accordingly, every 8th image was used for validation, and the rest for
+      training. For the test set, I created a circular path around the object at a fixed height using spherical 
+      coordinates to generate camera poses. The radius was set to be slightly larger than the average distance
+      of the training cameras from the object to ensure a good view of the object. Additionally, I saved the 
+      camera matrix as K so that I could easily access it and use it later on when training and rendering.
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 1: Fit a Neural Field to a 2D Image </h2>
+    <div class="paragraph-box">
+      For this part, my model architecture is as follows: <br><br>
+        - Input (u,v) -> PE -> 42D vector <br>
+        - 42D -> Linear(256) -> ReLU <br>
+        - 256D -> Linear(256) -> ReLU <br>
+        - 256D -> Linear(256) -> ReLU <br>
+        - 256D -> Linear(3) -> Sigmoid -> Output (r,g,b) <br><br>
+      (This is the same as the suggested architecture in the assignment) <br><br>
+      In total, there are 4 layers and the learning rate used is 1e-4. I used L=10 for positional encoding.
+      I also used a bach size of 10240 <br>
+      Comparing width and L values, I found that having a larger L 
+      allowed for more high frequency details and having a higher width allowed for better fitting of the image. 
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/fox.jpg">
+        <h4>Test Image</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/bird.jpg">
+        <h4>Chosen Image</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/fox_L10_W256_progression/iter_00000.png">
+        <h4>Fox Image (Iteration 0)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/fox_L10_W256_progression/iter_01000.png">
+        <h4>Fox Image (Iteration 1000)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/fox_L10_W256_progression/iter_02000.png">
+        <h4>Fox Image (Iteration 2000)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/fox_L10_W256_progression/iter_03000.png">
+        <h4>Fox Image (Iteration 3000)</h4>
+      </div>
+    </div>
+
+    <div class = "image-row-wrapper">
+      <div class="image-block">
+        <img src="images/fox_L10_W256_psnr_curve.png">
+        <h4>PSNR Curve of Fox Image with 3000 Iterations</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="images/my_image_L10_W256_progression/iter_00000.png">
+        <h4>My Image (Iteration 0)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/my_image_L10_W256_progression/iter_01000.png">
+        <h4>My Image (Iteration 1000)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/my_image_L10_W256_progression/iter_02000.png">
+        <h4>My Image (Iteration 2000)</h4>
+      </div>
+      <div class="image-block">
+        <img src="images/my_image_L10_W256_progression/iter_03000.png">
+        <h4>My Image (Iteration 3000)</h4>
+      </div>
+    </div>
+
+    
+
+    <div class = "image-row-wrapper">
+      <div class="image-block">
+        <img src="images/2x2_grid.png">
+        <h4>2x2 Grid of Rendered Images, Top Left (L=4, W=64), Top Right (L=4, W=256), Bottom Left (L=10, W=64), Bottom Right (L=10, W=256)</h4>
+      </div>
+    </div>
+
+    
+
+  </section>
+
+  <section>
+    <h2>Part 2: Fit a Neural Radiance Field from Multi-View Images </h2>
+    <div class="paragraph-box">
+      For this part, I just loaded in the dataset. However, I have to load in the extra camera matrix that I saved
+      for ease of access later on.
+    </div>
+  </section>
+
+  <section>
+    <h2>Part 2.1: Create Rays from Cameras </h2>
+      <div class="paragraph-box">
+        For the Camera to World Coordinate function, I used torch to implement the function for batching. The 
+        matrix is converted to homogenous coordinates then multiplied by the camera to world matrix to get the
+        world coordinates. <br><br>
+        For the pixel to coordinate function, I used the camera intrinsics matrix to convert the pixel coordinates. <br><br>
+        Finally for the pixel to ray function, I took ro as the camera origin in world coordinates (using the translation
+        vector from the camera to world matrix). For rd, I computed the direction by subtracting the pixel coordinates
+        in world coordinates by the camera origin, then normalizing it. <br><br>
+      </div>
+  </section>
+
+  <section>
+    <h2>Part 2.2: Sampling </h2>
+      <div class="paragraph-box">
+        For the sampling rays from images function, I used the approach of flattening the pixels and then sampling 
+        N random samples. <br><br>
+        For the sampling along rays function, I added a parameter to allow for random sampling within each bin.
+      </div>
+  </section>
+
+  <section>
+    <h2>Part 2.3: Putting the Dataloading all together </h2>
+      <div class="paragraph-box">
+        Below are the images I took to test my code.
+      </div>
+
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="images/lego_render1.png">
+          <h4>Test 1</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/lego_render2.png">
+          <h4>Test 2</h4>
+        </div>
+  </section>
+
+  <section>
+    <h2>Part 2.4: Neural Radiance Field </h2>
+      <div class="paragraph-box">
+        For my model architecture, I used the same as the one suggested in the assignment: <br>
+          - Input 3D points (x) and 3D view directions (d). <br>
+          - PE(x) with L=10 frequencies -> 63D vector. <br>
+          - PE(d) with L=4 frequencies -> 27D vector. <br>
+          - First Linear layer takes PE(x) as input, (63 -> 256). <br>
+          - 8 Linear(256) layers for processing 3D points (x), except for the 5th layer: <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- After the 4th layer, PE(x) is concatenated as a skip connection (256 + 63 -> 256). <br>
+          - A final Linear(1) + ReLU to get sigma. <br>
+          - A final 2-layer MLP for RGB: <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- Takes the 8th layer's output <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- Concatenate it with PE(d), so it is (256 + 27 -> 128) <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- Pass through 2 final layers (128 -> 3) + Sigmoid to get RGB.
+      </div>
+  </section>
+
+  <section>
+    <h2>Part 2.5: Volume Rendering </h2>
+      <div class="paragraph-box">
+        For this part, I used the torch cumprod function to efficiently compute the transmittance T. Then 
+        using T, I computed the weights and finally the RGB. I used the assertion statement given to verify
+        my implementation. <br><br>
+        The results of all my functions on the lego dataset is shown below. For the lego datset, I used 
+        near = 2.0 and far = 6.0. I ran 3000 iterations at batch size of 4096 (due to GPU memory constraints).
+        I achieved a PSNR above 23.
+      </div>
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="images/lego_progression/iter_00000.png">
+          <h4>Iteration 0</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/lego_progression/iter_01000.png">
+          <h4>Iteration 1000</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/lego_progression/iter_02000.png">
+          <h4>Iteration 2000</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/lego_progression/iter_03000.png">
+          <h4>Iteration 3000</h4>
+        </div>
+      </div>
+        
+        <div class = "image-row-wrapper">
+          <div class="image-block">
+            <img src="images/lego_validation_psnr_curve.png">
+            <h4>PSNR Curve on the validation images for Lego Dataset</h4>
+          </div>
+        </div>
+
+        <div class = "image-row-wrapper">
+          <div class="image-block">
+            <img src="images/lego_video.gif">
+            <h4>Final Lego Gif</h4>
+          </div>
+        </div>
+  </section>
+
+    <section>
+    <h2>Part 2.6: Training with your own data </h2>
+      <div class="paragraph-box">
+        For my dataset, as mentioned above, I used my penguin crochet, however, the left side of the image is 
+        missing as I could not take pictures from that side due to the ArUco tag being blocked by the object itself.
+        <br><br>
+        For the penguin dataset, I used near = 0.09 and far = 0.45. I ran 15000 iterations at batch size of 4096
+        (due to GPU memory constraints). For the ray sampling, I used 64 samples per ray. <br> 
+        I used the same model architecture as the lego dataset. I have also 
+        provided intermediate rendered images and the PSNR and loss curve below. 
+        <br><br>
+        I added the penguin images again as reference!
+      </div>
+
+      <div class="image-grid">
+      <div class="image-block">
+        <img src="./images/object_images/photo_1_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 1</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/object_images/photo_2_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/object_images/photo_3_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 3</h4>
+      </div>
+      <div class="image-block">
+        <img src="./images/object_images/photo_4_2025-11-15_13-44-33.jpg">
+        <h4>Penguin Image 4</h4>
+      </div>
+    </div>
+          <div class="paragraph-box">
+          Below are the rendered iterations at 0, 3000, 6000, 9000, 12000, and 15000 iterations.
+    </div>
+
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="images/mydata_progression/iter_00000.png">
+          <h4>Iteration 0</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/mydata_progression/iter_03000.png">
+          <h4>Iteration 3000</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/mydata_progression/iter_06000.png">
+          <h4>Iteration 6000</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/mydata_progression/iter_09000.png">
+          <h4>Iteration 9000</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/mydata_progression/iter_12000.png">
+          <h4>Iteration 12000</h4>
+        </div>
+        <div class="image-block">
+          <img src="images/mydata_progression/iter_15000.png">
+          <h4>Iteration 15000</h4>
+        </div>
+      </div>
+        
+        <div class = "image-row-wrapper">
+          <div class="image-block">
+            <img src="images/training_graphs.png">
+            <h4>Plot of training PSNR and Loss over iterations</h4>
+          </div>
+        </div>
+
+        <div class = "image-row-wrapper">
+          <div class="image-block">
+            <img src="images/mydata_video.gif">
+            <h4>Final Penguin Gif</h4>
+          </div>
+        </div>
+  </section>
+
+  <section>
+    <h2>Bells and Whistles! </h2>
+      <div class="paragraph-box">
+        I decided to change the volume rendering function to allow for different coloured backgrounds. This was 
+        done by simply applying the background colour to transmittance for the last sample.
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="images/lego_whitebg_video.gif">
+          <h4>Lego Gif with White background!</h4>
+        </div>
+  </section>
