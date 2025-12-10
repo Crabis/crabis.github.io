@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project 5: Fun with Diffusion Models</title>
+  <style>
+    :root {
+      --dark-blue: #0a2540;
+      --yellow: #fdd835;
+      --section-bg: #102d52;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--dark-blue);
+      color: white;
+    }
+
+    header {
+      padding: 20px 40px;
+      background-color: var(--dark-blue);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    header h1 {
+      color: var(--yellow);
+      margin: 0;
+    }
+
+    .paragraph-box strong {
+    color: var(--yellow);
+    }
+
+    section {
+      background-color: var(--section-bg);
+      margin: 30px;
+      padding: 30px;
+      border-left: 8px solid var(--yellow);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      color: var(--yellow);
+      margin-bottom: 10px;
+    }
+
+    .paragraph-box {
+      background-color: #1b395f;
+      border-left: 4px solid var(--yellow);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .image-pair {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 25px;
+      align-items: flex-start;
+    }
+
+    .image-block {
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .image-block img {
+      width: 100%;
+      max-width: 1000px;
+      height: 300px;
+      object-fit: cover;
+      border: 3px solid var(--yellow);
+      border-radius: 8px;
+    }
+
+    .image-row-wrapper {
+      display: flex;
+      justify-content: center;    
+      flex-wrap: wrap;            
+      gap: 20px;                   
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .image-row-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .image-row-wrapper h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-row-wrapper .image-block img {
+    height: auto;           
+    object-fit: contain;   
+    max-width: 800px;       
+    }
+    .image-block h4 {
+      margin: 10px 0 5px 0;
+      color: var(--yellow);
+    }
+
+    .image-grid {
+      display: flex;        
+      flex-wrap: wrap;      
+      justify-content: center; 
+      gap: 20px;
+      margin-bottom: 30px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 20px;
+    }
+    
+    .image-grid .image-block {
+      flex-basis: 240px; 
+      flex-grow: 0;         
+      max-width: 700px;     
+    }
+    @media (max-width: 700px) {
+      .image-pair, .image-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black; 
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Project 5: Fun with Diffusion Models</h1>
+    <img src="logo.png" alt="Go Bears!" style="height: 60px; float: right; margin-top: -50px;">
+  </header>
+
+  <section>
+    <h2>Part A: 0 - Setup </h2>
+
+    <div class="paragraph-box">
+      After setting up my Deepfloyd, I used the seed = 42 for all my image generations. Looking at the prompts,
+      we can see that the quality of the prompt generated images improves with a higher n value. This is
+      can be seen in the greater details for the higher n value images. However, critically, looking at one of my 
+      prompts, "A candle with a purple flame", we can see that the candle's flame is not purple for either n value.
+      This could be due to the model not being trained well enough to capture such specific details. When I compared
+      this to the current state of the art model Nano Banana Pro by Google, I was able to get a great purple flamed
+      candle with the same prompt.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/0_20.png">
+        <h4>Prompt: A medieval tower (n=20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/0_50.png">
+        <h4>Prompt: A medieval tower (n=50)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/1_20.png">
+        <h4>Prompt: A photo of a volcano (n=20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/1_50.png">
+        <h4>Prompt: A photo of a volcano (n=50)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/2_20.png">
+        <h4>Prompt: A candle with a purple flame (n=20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/2_50.png">
+        <h4>Prompt: A candle with a purple flame (n=50)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/stage2/purple_candle_gemini.png">
+        <h4>Prompt: A candle with a purple flame (Prompted from Nano Banana Pro as reference)</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.1 Implementing the Forward Process</h2>
+    <div class="paragraph-box">
+      I simply implemented the forward noising function, using torch.randn for epsilon and following the formula.
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="./proj5a_outputs/campanile.jpg">
+        <h4>Campanile (Unedited)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/noising/campanile_250.png">
+        <h4>Campanile (t=250)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/noising/campanile_500.png">
+        <h4>Campanile (t=500)</h4>
+      </div>
+      <div class="image-block">
+        <img src="./proj5a_outputs/noising/campanile_750.png">
+        <h4>Campanile (t=750)</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.2 - Classical Denoising </h2>
+    <div class="paragraph-box">
+      Below are the results from running the noised images through the Gaussian blur filter.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/gaussian/gaussian_250.png">
+        <h4>Gaussian Blur Denoising t=250</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/gaussian/gaussian_500.png">
+        <h4>Gaussian Blur Denoising t=500</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/gaussian/gaussian_750.png">
+        <h4>Gaussian Blur Denoising t=750</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.3 - One-Step Denoising </h2>
+    <div class="paragraph-box">
+      Following the formula from before, I changed the subject of the equation to solve for the original image.
+      Then using the noise estimate, we compute the denoised image in a single step.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/one_step/one_step_250.png">
+        <h4>One-Step Denoising t=250</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/one_step/one_step_500.png">
+        <h4>One-Step Denoising t=500</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/one_step/one_step_750.png">
+        <h4>One-Step Denoising t=750</h4>
+      </div>
+    </div>
+  </section>
+
+
+  <section>
+    <h2>Part A: 1.4 - Iterative Denoising </h2>
+    <div class="paragraph-box">
+      Here, we use the strided timesteps in order to iteratively denoise the image. Starting from the noised image,
+      we denoise it multiple times, getting a new noise estimate each time until we reach t=0. As requested, I 
+      started from i_start = 10, corresponding to t=690. I've also attached the one-step denoised and gaussian 
+      blur denoised images from t=690 for comparison. As can be seen, the iterative denoising produces a result
+      with much more details than the other 2 methods.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/iterative/iterative_90.png">
+        <h4>Noisy Campanile at t=90</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/iterative/iterative_240.png">
+        <h4>One-Step Denoising t=240</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/iterative/iterative_390.png">
+        <h4>One-Step Denoising t=390</h4>
+      </div>
+            <div class="image-block">
+        <img src="proj5a_outputs/iterative/iterative_540.png">
+        <h4>One-Step Denoising t=540</h4>
+      </div>
+    </div>
+
+        <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/iterative/iterative_690.png">
+        <h4>Noisy Campanile at t=690</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/iterative/iterative_clean.png">
+        <h4>Iteratively Denoised Campanile</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/iterative/one_step_clean.png">
+        <h4>One-Step Denoised Campanile</h4>
+      </div>
+            <div class="image-block">
+        <img src="proj5a_outputs/iterative/gaussian_clean.png">
+        <h4>Gaussian Blur Denoised Campanile</h4>
+      </div>
+    </div>
+  </section>
+
+
+    <section>
+    <h2>Part A: 1.5 - Diffusion Model Sampling </h2>
+    <div class="paragraph-box">
+      Here are 5 samples generated from the diffusion model.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/samples/sample_1.png">
+        <h4>Generated Sample 1  </h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/samples/sample_2.png">
+        <h4>Generated Sample 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/samples/sample_3.png">
+        <h4>Generated Sample 3</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/samples/sample_4.png">
+        <h4>Generated Sample 4</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/samples/sample_5.png">
+        <h4>Generated Sample 5</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.6 - Classifier-Free Guidance (CFG) </h2>
+    <div class="paragraph-box">
+      Following the formula, I implemented the classifier-free guidance similar to before, with the difference 
+      being the addition of the unconditional noise estimate. Shown are 5 samples with CFG scale of 7.0. As can 
+      be seen by the samples, the CFG samples are much more coherent than the non-CFG ones.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/cfg_samples/sample_1_cfg.png">
+        <h4>CFG Generated Sample 1  </h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/cfg_samples/sample_2_cfg.png">
+        <h4>CFG Generated Sample 2</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/cfg_samples/sample_3_cfg.png">
+        <h4>CFG Generated Sample 3</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/cfg_samples/sample_4_cfg.png">
+        <h4>CFG Generated Sample 4</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/cfg_samples/sample_5_cfg.png">
+        <h4>CFG Generated Sample 5</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.7 - Image to image Translation </h2>
+    <div class="paragraph-box">
+      For this part, I simply used the CFG function with different i_start levels. Below are the results for 
+      the campanile and 2 of my own images. As we get closer and closer to starting with the original image
+      (higher i_start number), the result becomes closer to the original.
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/campanile_1.png">
+        <h4>Campanile (i_start = 1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/campanile_3.png">
+        <h4>Campanile (i_start = 3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/campanile_5.png">
+        <h4>Campanile (i_start = 5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/campanile_7.png">
+        <h4>Campanile (i_start = 7)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/campanile_10.png">
+        <h4>Campanile (i_start = 10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/campanile_20.png">
+        <h4>Campanile (i_start = 20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/campanile.jpg">
+        <h4>Campanile (Original)</h4>
+      </div>
+    </div>
+    
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/seal_1.png">
+        <h4>Test Image 1 (i_start = 1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/seal_3.png">
+        <h4>Test Image 1 (i_start = 3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/seal_5.png">
+        <h4>Test Image 1 (i_start = 5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/seal_7.png">
+        <h4>Test Image 1 (i_start = 7)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/seal_10.png">
+        <h4>Test Image 1 (i_start = 10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/seal_20.png">
+        <h4>Test Image 1 (i_start = 20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/seal.jpg">
+        <h4>Test Image 1 (Original)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/park_1.png">
+        <h4>Test Image 2 (i_start = 1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/park_3.png">
+        <h4>Test Image 2 (i_start = 3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/park_5.png">
+        <h4>Test Image 2 (i_start = 5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/park_7.png">
+        <h4>Test Image 2 (i_start = 7)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/park_10.png">
+        <h4>Test Image 2 (i_start = 10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/SDEdit/park_20.png">
+        <h4>Test Image 2 (i_start = 20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/park.jpg">
+        <h4>Test Image 2 (Original)</h4>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>Part A: 1.7.1 - Editing Hand-Drawn and Web Image </h2>
+    <div class="paragraph-box">
+      I just did the above but with 1 web image and 2 hand-drawn images. (Drawn Image 2 is actually a 
+      landscape drawing but it got squished after the drawing processing code)
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image_1.png">
+        <h4>Web Image (i_start = 1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image_3.png">
+        <h4>Web Image (i_start = 3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image_5.png">
+        <h4>Web Image (i_start = 5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image_7.png">
+        <h4>Web Image (i_start = 7)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image_10.png">
+        <h4>Web Image (i_start = 10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image_20.png">
+        <h4>Web Image (i_start = 20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/web_image.png">
+        <h4>Web Image (Original)</h4>
+      </div>
+    </div>
+    
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1_1.png">
+        <h4>Drawn Image 1 (i_start = 1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1_3.png">
+        <h4>Drawn Image 1 (i_start = 3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1_5.png">
+        <h4>Drawn Image 1 (i_start = 5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1_7.png">
+        <h4>Drawn Image 1 (i_start = 7)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1_10.png">
+        <h4>Drawn Image 1 (i_start = 10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1_20.png">
+        <h4>Drawn Image 1 (i_start = 20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image1.png">
+        <h4>Drawn Image 1 (Original)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2_1.png">
+        <h4>Drawn Image 2 (i_start = 1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2_3.png">
+        <h4>Drawn Image 2 (i_start = 3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2_5.png">
+        <h4>Drawn Image 2 (i_start = 5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2_7.png">
+        <h4>Drawn Image 2 (i_start = 7)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2_10.png">
+        <h4>Drawn Image 2 (i_start = 10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2_20.png">
+        <h4>Drawn Image 2 (i_start = 20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Edits/drawn_image2.png">
+        <h4>Drawn Image 2 (Original)</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.7.2 - Inpainting </h2>
+      <div class="paragraph-box">
+        I implemented Inpainting by masking out the area I wanted and replacing it with pure noise. For the rest 
+        of the image, the model is fed a noisy image corresponding to the noise level.
+      </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/campanile.jpg">
+        <h4>Campanile (Original Image)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/capanile_mask.png">
+        <h4>Campanile (Mask Used)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/campanile_toreplace.png">
+        <h4>Campanile (Portion Replaced)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/campanile_inpainted.png">
+        <h4>Campanile (Inpainted Result)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/bird.jpg">
+        <h4>Sample Image 1 (Original Image)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/bird_mask.png">
+        <h4>Sample Image 1 (Mask Used)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/bird_toreplace.png">
+        <h4>Sample Image 1 (Portion Replaced)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/bird_inpainted.png">
+        <h4>Sample Image 1 (Inpainted Result)</h4>
+      </div>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/seal.jpg">
+        <h4>Sample Image 2 (Original Image)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/seal_mask.png">
+        <h4>Sample Image 2 (Mask Used)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/seal_toreplace.png">
+        <h4>Sample Image 2 (Portion Replaced)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/Inpainting/seal_inpainted.png">
+        <h4>Sample Image 2 (Inpainted Result)</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.7.3 - Text Conditional Image to Image Translation </h2>
+      <div class="paragraph-box">
+        I ran CFG on the image with a specified prompt.
+      </div>
+
+    <div class="paragraph-box">
+      Image: Campanile, Prompt: A sand castle
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/campanile_conditioned_1.png">
+        <h4>Campanile (t=1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/campanile_conditioned_3.png">
+        <h4>Campanile (t=3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/campanile_conditioned_5.png">
+        <h4>Campanile (t=5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/campanile_conditioned_7.png">
+        <h4>Campanile (t=7)</h4>
+      </div>
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/campanile_conditioned_10.png">
+        <h4>Campanile (t=10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/campanile_conditioned_20.png">
+        <h4>Campanile (t=20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/campanile.jpg">
+        <h4>Campanile (Original)</h4>
+      </div>
+    </div>
+    <div class="paragraph-box">
+      Image: Sample 1, Prompt: A pink cactus
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/bird_conditioned_1.png">
+        <h4>Sample 1 (t=1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/bird_conditioned_3.png">
+        <h4>Sample 1 (t=3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/bird_conditioned_5.png">
+        <h4>Sample 1 (t=5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/bird_conditioned_7.png">
+        <h4>Sample 1 (t=7)</h4>
+      </div>
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/bird_conditioned_10.png">
+        <h4>Sample 1 (t=10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/bird_conditioned_20.png">
+        <h4>Sample 1 (t=20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/bird.jpg">
+        <h4>Sample 1 (Original)</h4>
+      </div>
+    </div>
+    <div class="paragraph-box">
+      Image: Sample 2, Prompt: A lighthouse
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/seal_conditioned_1.png">
+        <h4>Sample 2 (t=1)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/seal_conditioned_3.png">
+        <h4>Sample 2 (t=3)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/seal_conditioned_5.png">
+        <h4>Sample 2 (t=5)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/seal_conditioned_7.png">
+        <h4>Sample 2 (t=7)</h4>
+      </div>
+    </div>
+    <div class="image-grid">
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/seal_conditioned_10.png">
+        <h4>Sample 2 (t=10)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/text_conditioned/seal_conditioned_20.png">
+        <h4>Sample 2 (t=20)</h4>
+      </div>
+      <div class="image-block">
+        <img src="proj5a_outputs/seal.jpg">
+        <h4>Sample 2 (Original)</h4>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.8 - Visual Anagrams </h2>
+      <div class="paragraph-box">
+        I implemented the visual anagram function by following the instructions. Starting with pure noise, we 
+        get the noise estimate for the first prompt. Then, we flip the noisy image and estimate the noise for the
+        second prompt. We then flip the second noise estimate, add them together and use the average.
+      </div>
+
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="proj5a_outputs/anagrams/desk_lamp.png">
+          <h4>Anagram 1 (Desk Lamp)</h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5a_outputs/anagrams/mushroom.png">
+          <h4>Anagram 1 (Mushroom)</h4>
+        </div>
+
+        <div class="image-grid">
+        <div class="image-block">
+          <img src="proj5a_outputs/anagrams/volcano.png">
+          <h4>Anagram 2 (Volcano)</h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5a_outputs/anagrams/pizza_slice.png">
+          <h4>Anagram 2 (Pizza Slice)</h4>
+        </div>
+  </section>
+
+  <section>
+    <h2>Part A: 1.9 - Hybrid Images </h2>
+      <div class="paragraph-box">
+        To implement the hybrid image function, we first get the CFG noise estimate for the 2 different prompts.
+        We then get the low-pass and high-pass (by subtracting low pass from original) of the respective 
+        noise estimates, before summing them together.
+      </div>
+
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="proj5a_outputs/hybrids/earth_charcuterie_hybrid.png">
+          <h4>Hybrid 1 (Earth and Charcuterie Board) </h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5a_outputs/hybrids/pencil_medieval_hybrid.png">
+          <h4>Hybrid 2 (Pencil and Medieval Tower)</h4>
+        </div>
+  </section>
+
+  <section>
+    <h2>Part B: 1.2 - Using the UNet to train a denoiser </h2>
+      <div class="paragraph-box">
+        The noising function just follows the formula, adding random noise to the image based on the sigma scale.
+      </div>
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/0.0.png">
+          <h4>Sigma = 0.0 </h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/0.2.png">
+          <h4>Sigma = 0.2</h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/0.4.png">
+          <h4>Sigma = 0.4 </h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/0.5.png">
+          <h4>Sigma = 0.5</h4>
+        </div>
+      </div>
+      <div class="image-grid">
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/0.6.png">
+          <h4>Sigma = 0.6 </h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/0.8.png">
+          <h4>Sigma = 0.8</h4>
+        </div>
+        <div class="image-block">
+          <img src="proj5b_outputs/noising/1.0.png">
+          <h4>Sigma = 1.0 </h4>
+        </div>
+      </div>
+  </section>
+
+
+  <section>
+    <h2>Part B: 1.2.1 - Training </h2>
+      <div class="paragraph-box">
+        Following the UNet architecture given in the diagram, I implemented the respective blocks and combined them
+        into the UNet. Below are the results after training on the 1st and 5th epoch. The noise level sigma=0.5 was 
+        used for the samples. They are in the order (input,noisy,denoised). As shown, the results are much clearer
+        after training for 5 epochs as compared to 1. These are the hyperparameters I used for training:
+        <ul>
+          <li>Batch Size: 256</li>
+          <li>Learning Rate: 1e-4</li>
+          <li>Optimizer: Adam</li>
+          <li>Hidden Dimensions: 128</li>
+          <li>Number of Epochs: 5</li>
+          <li>Noise Level: 0.5</li>
+        </ul>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/epoch_1_sample_0.png">
+          <h4>Sample 1 (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/epoch_1_sample_1.png">
+          <h4>Sample 2 (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/epoch_1_sample_2.png">
+          <h4>Sample 3 (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/epoch_5_sample_0.png">
+          <h4>Sample 1 (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/epoch_5_sample_1.png">
+          <h4>Sample 2 (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/epoch_5_sample_2.png">
+          <h4>Sample 3 (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser/training_loss_curve.png">
+          <h4>Training Loss Curve (UNet Denoiser)</h4>
+        </div>
+      </div>
+  </section>
+
+  <section>
+    <h2>Part B: 1.2.2 - Out of Distribution Testing </h2>
+      <div class="paragraph-box">
+        I sampled from the model using test images of different noise levels, different from the training set. 
+        As can be seen, the results start becoming much worse when using noise levels higher than 0.5 which 
+        the model was trained on.
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_0.0.png">
+          <h4>Sample (Sigma=0.0)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_0.2.png">
+          <h4>Sample (Sigma=0.2)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_0.4.png">
+          <h4>Sample (Sigma=0.4)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_0.5.png">
+          <h4>Sample (Sigma=0.5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_0.6.png">
+          <h4>Sample (Sigma=0.6)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_0.8.png">
+          <h4>Sample (Sigma=0.8)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/OOD/sample_1.0.png">
+          <h4>Sample (Sigma=1.0)</h4>
+        </div>
+      </div>
+  </section>
+
+  <section>
+    <h2>Part B: 1.2.3 - Denoising Pure Noise </h2>
+      <div class="paragraph-box">
+        For the explanation of the results with pure noise input, it can be explained by the loss function 
+        used during training. Since the model is trained to minimize the L2 loss, when given pure noise as input,
+        the model will need to predict 
+        the resulting number in the image. Since the input is pure noise, the model will likely predict
+        an average of all possible results. This causes a final output where the image is a blurry combination
+        of all 10 digits in the training set.
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser_purenoise/epoch_1_sample_0.png">
+          <h4>Sample 1 (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser_purenoise/epoch_1_sample_1.png">
+          <h4>Sample 2 (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser_purenoise/epoch_5_sample_0.png">
+          <h4>Sample 1 (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser_purenoise/epoch_5_sample_1.png">
+          <h4>Sample 2 (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/denoiser_purenoise/training_loss_curve.png">
+          <h4>Training Loss Curve (UNet Denoiser with Pure Noise)</h4>
+        </div>
+      </div>
+  </section>
+
+  <section>
+    <h2>Part B: 2.1 - Time-Conditioned UNet </h2>
+      <div class="paragraph-box">
+        Here I followed the instructions to add the time-conditioning block at the concatenation 
+        points during the upsampling path of the UNet. A scheduler was also use to adjust the learning rate 
+        after each epoch. By epoch 10, we can see the results are reasonably good, with some results being 
+        fully legible numbers.
+        These are the hyperparameters I used for training:
+        <ul>
+          <li>Batch Size: 64</li>
+          <li>Learning Rate: 1e-2</li>
+          <li>Optimizer: Adam</li>
+          <li>Hidden Dimensions: 64</li>
+          <li>Number of Epochs: 10</li>
+        </ul>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/time_conditioned/training_loss_curve.png">
+          <h4>Training Loss Curve (Time-Conditioned UNet)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/time_conditioned/epoch_1_grid.png">
+          <h4>Sample (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/time_conditioned/epoch_5_grid.png">
+          <h4>Sample (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/time_conditioned/epoch_10_grid.png">
+          <h4>Sample (Epoch 10)</h4>
+        </div>
+      </div>
+  </section>
+
+  <section>
+    <h2>Part B: 2.4 - Class-Conditioned UNet </h2>
+      <div class="paragraph-box">
+        Finally, we have the Class-Conditioned UNet. Adding the class conditioning block at the same place as 
+        the time-conditioning blocks. We also introduced periodic dropout to the model to help with generalization,
+        using puncond=0.1, meaning a 10% chance of dropping the class conditioning. Here, I also removed the 
+        scheduler from before, and to account for this, I decreased the learning rate to 1e-4. 
+        These are the hyperparameters I used for training:
+        <ul>
+          <li>Batch Size: 64</li>
+          <li>Learning Rate: 1e-4</li>
+          <li>Optimizer: Adam</li>
+          <li>Hidden Dimensions: 64</li>
+          <li>Number of Epochs: 10</li>
+        </ul>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/class_conditioned/training_loss_curve.png">
+          <h4>Training Loss Curve (Class-Conditioned UNet)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/class_conditioned/epoch_1_grid.png">
+          <h4>Sample (Epoch 1)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/class_conditioned/epoch_5_grid.png">
+          <h4>Sample (Epoch 5)</h4>
+        </div>
+      </div>
+
+      <div class="image-row-wrapper">
+        <div class="image-block">
+          <img src="proj5b_outputs/class_conditioned/epoch_10_grid.png">
+          <h4>Sample (Epoch 10)</h4>
+        </div>
+      </div>
+  </section>
+ 
+ 
